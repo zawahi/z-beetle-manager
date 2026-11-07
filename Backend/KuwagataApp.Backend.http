@@ -1,0 +1,6 @@
+@KuwagataApp.Backend_HostAddress = http://localhost:5210
+
+GET {{KuwagataApp.Backend_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###

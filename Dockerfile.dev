@@ -1,0 +1,16 @@
+FROM mcr.microsoft.com/dotnet/sdk:10.0
+
+# Install Node.js
+RUN apt-get update && apt-get install -y curl && \
+    curl -fsSL https://deb.nodesource.com/setup_20.x | bash - && \
+    apt-get install -y nodejs
+
+# Install concurrently
+RUN npm install -g concurrently
+
+WORKDIR /workspace
+
+# Start both Backend and Frontend concurrently
+CMD concurrently \
+    "cd Backend && dotnet watch run --non-interactive --urls http://0.0.0.0:8080" \
+    "cd Frontend && npm install && npm run dev"

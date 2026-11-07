@@ -1,0 +1,34 @@
+version: '3.8'
+
+services:
+  db:
+    image: postgres:15-alpine
+    environment:
+      POSTGRES_USER: kuwagata_user
+      POSTGRES_PASSWORD: kuwagata_password
+      POSTGRES_DB: kuwagata_db
+    ports:
+      - "5433:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+  # フロントエンドとバックエンドを統合したコンテナ
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile.dev
+    volumes:
+      - .:/workspace
+    ports:
+      - "5173:5173" # Vite (Frontend)
+      - "5000:8080" # .NET (Backend) 直接APIを叩く場合用
+    environment:
+      - ConnectionStrings__DefaultConnection=Host=db;Database=kuwagata_db;Username=kuwagata_user;Password=kuwagata_password
+      - ASPNETCORE_ENVIRONMENT=Development
+      - DOTNET_USE_POLLING_FILE_WATCHER=1
+      - CHOKIDAR_USEPOLLING=true
+    depends_on:
+      - db
+
+volumes:
+  postgres_data:
